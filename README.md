@@ -2,6 +2,7 @@
 
 ## 난이도 선택 가이드
 
+<<<<<<< HEAD
 ### Easy
 
 - https://github.com/hanghae-plus/front_5th_chapter3-1/tree/easy
@@ -10,12 +11,15 @@
 - 작성을 해보고 피어 리뷰와 멘토들의 피드백을 받아보세요!
 - **하지만, 모두 통과를 하더라도 합격을 받을 수는 없습니다. 가능하면 이 난이도를 선택하지 마세요**
 
+=======
+>>>>>>> 52b2dc130e026fbc68f060e707cea93db189f92c
 ### Medium
 
 - https://github.com/hanghae-plus/front_5th_chapter3-1/tree/medium
 - Easy에 비해 추가로 작성할 여러 통합 테스트가 존재합니다.
 - PR template에 있는 여러 질문에 답을 해보면서 문제를 풀어보세요
 - **Best가 불가능합니다**
+<<<<<<< HEAD
 
 ### Hard
 
@@ -23,3 +27,5 @@
 - Medium과 동일한 TC를 작성하지만, 과제를 작성하기 위한 여러가지 설정을 제공드리지 않습니다.
 - PR template에 있는 여러 질문에 답을 해보면서 문제를 풀어보세요!
 - **적절하게 목적에 맞게 작성하셨을 경우 Best가 가능합니다.**
+=======
+>>>>>>> 52b2dc130e026fbc68f060e707cea93db189f92c
