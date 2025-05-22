@@ -3,6 +3,14 @@ import { http, HttpResponse } from 'msw';
 import { server } from '../setupTests';
 import { Event } from '../types';
 
+export const setubMockHandlerError = () => {
+  server.use(
+    http.get('/api/events', () => {
+      return HttpResponse.error()
+    })
+  )
+}
+
 export const setupMockHandlerCreation = (initEvents = [] as Event[]) => {
   const mockEvents: Event[] = [...initEvents];
 
