@@ -154,7 +154,7 @@ it('존재하는 이벤트 삭제 시 에러없이 아이템이 삭제된다.', 
 
 });
 
-it.only("이벤트 로딩 실패 시 '이벤트 로딩 실패'라는 텍스트와 함께 에러 토스트가 표시되어야 한다", async () => {
+it("이벤트 로딩 실패 시 '이벤트 로딩 실패'라는 텍스트와 함께 에러 토스트가 표시되어야 한다", async () => {
   // setubMockHandlerError()
   // 먼저 console.error spy 설정정
   const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => { })
@@ -187,6 +187,46 @@ it.only("이벤트 로딩 실패 시 '이벤트 로딩 실패'라는 텍스트�
   server.resetHandlers()
 });
 
-it("존재하지 않는 이벤트 수정 시 '일정 저장 실패'라는 토스트가 노출되며 에러 처리가 되어야 한다", async () => { });
+it("존재하지 않는 이벤트 수정 시 '일정 저장 실패'라는 토스트가 노출되며 에러 처리가 되어야 한다", async () => {
+  const cosoleSpy = vi.spyOn(console, 'error').mockImplementation(() => { })
 
-it("네트워크 오류 시 '일정 삭제 실패'라는 텍스트가 노출되며 이벤트 삭제가 실패해야 한다", async () => { });
+  setupMockHandlerUpdating();
+
+  const { result } = renderHook(() => useEventOperations(true))
+
+  await act(() => Promise.resolve(null));
+
+  await act(() => result.current.saveEvent({ ...updateEvent, id: '3' }))
+
+  expect(cosoleSpy).toHaveBeenCalledWith(
+    'Error saving event:', expect.any(Error)
+  )
+
+  expect(toastFn).toHaveBeenCalledWith({
+    title: '일정 저장 실패',
+    status: 'error',
+    duration: 3000,
+    isClosable: true,
+  })
+
+});
+
+it("네트워크 오류 시 '일정 삭제 실패'라는 텍스트가 노출되며 이벤트 삭제가 실패해야 한다", async () => {
+  server.use(
+    http.delete('/api/events/:id', ({ params }) => {
+      return new HttpResponse(null, { status: 500 })
+    })
+  )
+
+  const { result } = renderHook(() => useEventOperations(false))
+
+  await act(() => Promise.resolve(null))
+  await act(() => result.current.deleteEvent('1'))
+
+  expect(toastFn).toHaveBeenCalledWith({
+    title: '일정 삭제 실패',
+    status: 'error',
+    duration: 3000,
+    isClosable: true,
+  })
+});

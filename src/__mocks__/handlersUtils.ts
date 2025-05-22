@@ -63,9 +63,14 @@ export const setupMockHandlerUpdating = () => {
       const { id } = params;
       const updatedEvent = (await request.json()) as Event;
       const index = mockEvents.findIndex((event) => event.id === id);
+      if (index === -1) {
+        return new HttpResponse(null, { status: 500 })
+      } else {
+        mockEvents[index] = { ...mockEvents[index], ...updatedEvent };
+        return HttpResponse.json(mockEvents[index]);
 
-      mockEvents[index] = { ...mockEvents[index], ...updatedEvent };
-      return HttpResponse.json(mockEvents[index]);
+      }
+
     })
   );
 };
