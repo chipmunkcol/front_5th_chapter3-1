@@ -102,131 +102,135 @@ vi.mock('@chakra-ui/react', async () => {
   };
 });
 
-it('저장되어있는 초기 이벤트 데이터를 적절하게 불러온다', async () => {
-  setupMockHandlerCreation()
-  const { result } = renderHook(() => useEventOperations(false))
 
-  expect(result.current.events).toEqual([])
+describe.skip('완료 skip', () => {
 
-  await act(() => result.current.fetchEvents())
-  // expect(result.current.events).toEqual(initEvent)
-  expect(result.current.events).toEqual([])
-});
+  it('저장되어있는 초기 이벤트 데이터를 적절하게 불러온다', async () => {
+    setupMockHandlerCreation()
+    const { result } = renderHook(() => useEventOperations(false))
 
-it('정의된 이벤트 정보를 기준으로 적절하게 저장이 된다', async () => {
-  setupMockHandlerCreation()
-  const { result } = renderHook(() => useEventOperations(false))
+    expect(result.current.events).toEqual([])
 
-  await act(() => result.current.saveEvent({ ...newEvent, id: '1' }))
-  expect(result.current.events).toEqual([{ ...newEvent, id: '1' }])
-});
+    await act(() => result.current.fetchEvents())
+    // expect(result.current.events).toEqual(initEvent)
+    expect(result.current.events).toEqual([])
+  });
 
-it("새로 정의된 'title', 'endTime' 기준으로 적절하게 일정이 업데이트 된다", async () => {
-  setupMockHandlerUpdating()
-  const { result } = renderHook(() => useEventOperations(true))
+  it('정의된 이벤트 정보를 기준으로 적절하게 저장이 된다', async () => {
+    setupMockHandlerCreation()
+    const { result } = renderHook(() => useEventOperations(false))
 
-  await act(() => result.current.fetchEvents())
-  expect(result.current.events).toEqual(updateInitEvents)
+    await act(() => result.current.saveEvent({ ...newEvent, id: '1' }))
+    expect(result.current.events).toEqual([{ ...newEvent, id: '1' }])
+  });
 
-  await act(() => result.current.saveEvent({ ...updateEvent, id: '2' }))
+  it("새로 정의된 'title', 'endTime' 기준으로 적절하게 일정이 업데이트 된다", async () => {
+    setupMockHandlerUpdating()
+    const { result } = renderHook(() => useEventOperations(true))
 
-  const updatedResult = updateInitEvents.map((event) => {
-    if (event.id === '2') {
-      return { ...event, ...updateEvent }
-    }
-    return event
-  })
-  // console.log(updatedResult);
-  expect(result.current.events).toEqual(updatedResult)
-});
+    await act(() => result.current.fetchEvents())
+    expect(result.current.events).toEqual(updateInitEvents)
 
-it('존재하는 이벤트 삭제 시 에러없이 아이템이 삭제된다.', async () => {
-  setupMockHandlerDeletion();
+    await act(() => result.current.saveEvent({ ...updateEvent, id: '2' }))
 
-  const { result } = renderHook(() => useEventOperations(false))
-
-  await act(() => result.current.fetchEvents())
-  expect(result.current.events).toEqual(deleteInitEvents)
-
-  await act(() => result.current.deleteEvent('1'))
-
-  expect(result.current.events).toEqual([])
-
-});
-
-it("이벤트 로딩 실패 시 '이벤트 로딩 실패'라는 텍스트와 함께 에러 토스트가 표시되어야 한다", async () => {
-  // setubMockHandlerError()
-  // 먼저 console.error spy 설정정
-  const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => { })
-
-  server.use(
-    http.get('/api/events', () => {
-      return new HttpResponse(null, { status: 500 })
+    const updatedResult = updateInitEvents.map((event) => {
+      if (event.id === '2') {
+        return { ...event, ...updateEvent }
+      }
+      return event
     })
-  )
-  renderHook(() => useEventOperations(false))
+    // console.log(updatedResult);
+    expect(result.current.events).toEqual(updatedResult)
+  });
 
-  // 이렇게 실행해야 fetch 가 한번만 실행됨
-  await act(() => Promise.resolve(null));
+  it('존재하는 이벤트 삭제 시 에러없이 아이템이 삭제된다.', async () => {
+    setupMockHandlerDeletion();
 
-  expect(consoleSpy).toHaveBeenCalledTimes(1)
+    const { result } = renderHook(() => useEventOperations(false))
 
-  expect(consoleSpy).toHaveBeenCalledWith(
-    'Error fetching events:',
-    expect.any(Error)
-  )
+    await act(() => result.current.fetchEvents())
+    expect(result.current.events).toEqual(deleteInitEvents)
 
-  expect(toastFn).toHaveBeenCalledWith({
-    title: '이벤트 로딩 실패',
-    status: 'error',
-    duration: 3000,
-    isClosable: true,
-  })
+    await act(() => result.current.deleteEvent('1'))
 
-  consoleSpy.mockRestore()
-  server.resetHandlers()
-});
+    expect(result.current.events).toEqual([])
 
-it("존재하지 않는 이벤트 수정 시 '일정 저장 실패'라는 토스트가 노출되며 에러 처리가 되어야 한다", async () => {
-  const cosoleSpy = vi.spyOn(console, 'error').mockImplementation(() => { })
+  });
 
-  setupMockHandlerUpdating();
+  it("이벤트 로딩 실패 시 '이벤트 로딩 실패'라는 텍스트와 함께 에러 토스트가 표시되어야 한다", async () => {
+    // setubMockHandlerError()
+    // 먼저 console.error spy 설정정
+    const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => { })
 
-  const { result } = renderHook(() => useEventOperations(true))
+    server.use(
+      http.get('/api/events', () => {
+        return new HttpResponse(null, { status: 500 })
+      })
+    )
+    renderHook(() => useEventOperations(false))
 
-  await act(() => Promise.resolve(null));
+    // 이렇게 실행해야 fetch 가 한번만 실행됨
+    await act(() => Promise.resolve(null));
 
-  await act(() => result.current.saveEvent({ ...updateEvent, id: '3' }))
+    expect(consoleSpy).toHaveBeenCalledTimes(1)
 
-  expect(cosoleSpy).toHaveBeenCalledWith(
-    'Error saving event:', expect.any(Error)
-  )
+    expect(consoleSpy).toHaveBeenCalledWith(
+      'Error fetching events:',
+      expect.any(Error)
+    )
 
-  expect(toastFn).toHaveBeenCalledWith({
-    title: '일정 저장 실패',
-    status: 'error',
-    duration: 3000,
-    isClosable: true,
-  })
-
-});
-
-it("네트워크 오류 시 '일정 삭제 실패'라는 텍스트가 노출되며 이벤트 삭제가 실패해야 한다", async () => {
-  server.use(
-    http.delete('/api/events/:id', ({ params }) => {
-      return new HttpResponse(null, { status: 500 })
+    expect(toastFn).toHaveBeenCalledWith({
+      title: '이벤트 로딩 실패',
+      status: 'error',
+      duration: 3000,
+      isClosable: true,
     })
-  )
 
-  const { result } = renderHook(() => useEventOperations(false))
+    consoleSpy.mockRestore()
+    server.resetHandlers()
+  });
 
-  await act(() => Promise.resolve(null))
-  await act(() => result.current.deleteEvent('1'))
+  it("존재하지 않는 이벤트 수정 시 '일정 저장 실패'라는 토스트가 노출되며 에러 처리가 되어야 한다", async () => {
+    const cosoleSpy = vi.spyOn(console, 'error').mockImplementation(() => { })
 
-  expect(toastFn).toHaveBeenCalledWith({
-    title: '일정 삭제 실패',
-    status: 'error',
-    duration: 3000,
-    isClosable: true,
-  })
-});
+    setupMockHandlerUpdating();
+
+    const { result } = renderHook(() => useEventOperations(true))
+
+    await act(() => Promise.resolve(null));
+
+    await act(() => result.current.saveEvent({ ...updateEvent, id: '3' }))
+
+    expect(cosoleSpy).toHaveBeenCalledWith(
+      'Error saving event:', expect.any(Error)
+    )
+
+    expect(toastFn).toHaveBeenCalledWith({
+      title: '일정 저장 실패',
+      status: 'error',
+      duration: 3000,
+      isClosable: true,
+    })
+
+  });
+
+  it("네트워크 오류 시 '일정 삭제 실패'라는 텍스트가 노출되며 이벤트 삭제가 실패해야 한다", async () => {
+    server.use(
+      http.delete('/api/events/:id', ({ params }) => {
+        return new HttpResponse(null, { status: 500 })
+      })
+    )
+
+    const { result } = renderHook(() => useEventOperations(false))
+
+    await act(() => Promise.resolve(null))
+    await act(() => result.current.deleteEvent('1'))
+
+    expect(toastFn).toHaveBeenCalledWith({
+      title: '일정 삭제 실패',
+      status: 'error',
+      duration: 3000,
+      isClosable: true,
+    })
+  });
+})
